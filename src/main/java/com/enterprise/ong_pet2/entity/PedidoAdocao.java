@@ -3,7 +3,7 @@ package com.enterprise.ong_pet2.entity;
 import com.enterprise.ong_pet2.enums.StatusAdocao;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Id;
 
 import java.time.LocalDate;
 

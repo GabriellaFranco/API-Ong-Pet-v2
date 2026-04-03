@@ -5,7 +5,7 @@ import com.enterprise.ong_pet2.enums.Genero;
 import com.enterprise.ong_pet2.enums.PorteAnimal;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Id;
 
 import java.util.ArrayList;
 import java.util.List;

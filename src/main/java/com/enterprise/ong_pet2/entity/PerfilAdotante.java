@@ -28,37 +28,42 @@ public class PerfilAdotante extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     private TipoMoradia tipoMoradia;
 
+    @Column(name = "area_m2")
     private Integer areaM2;
 
-    @Column(nullable = false)
+    @Column(name = "tem_outros_pets", nullable = false)
     private Boolean temOutrosPets;
 
+    @Column(name = "descricao_outros_pets")
     private String descricaoOutrosPets;
 
-    @Column(nullable = false)
+    @Column(name = "rotina_diaria", nullable = false)
     private String rotinaDiaria;
 
-    @Column(nullable = false)
+    @Column(name = "horas_em_casa_por_dia", nullable = false)
     private Integer horasEmCasaPorDia;
 
-    @Column(nullable = false)
+    @Column(name = "renda_mensal_faixa", nullable = false)
     @Enumerated(EnumType.STRING)
     private FaixaRenda rendaMensalFaixa;
 
-    @Column(nullable = false)
+    @Column(name = "experiencia_animais", nullable = false)
     private Boolean experienciaAnimais;
 
-    @Column(nullable = false)
+    @Column(name = "motivacao_adocao", nullable = false)
     private String motivacaoAdocao;
 
+    @Column(name = "especie_preferida")
     @Enumerated(EnumType.STRING)
     private Especie especiePreferida;
 
+    @Column(name = "porte_preferido")
     @Enumerated(EnumType.STRING)
     private PorteAnimal portePreferido;
 
-    @Column(nullable = false)
+    @Column(name = "aceita_criancas", nullable = false)
     private Boolean aceitaCriancas;
 
+    @Column(name = "score_risco")
     private Integer scoreRisco;
 }
