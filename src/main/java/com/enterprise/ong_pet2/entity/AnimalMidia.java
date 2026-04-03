@@ -3,7 +3,7 @@ package com.enterprise.ong_pet2.entity;
 import com.enterprise.ong_pet2.enums.TipoMidia;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Id;
 
 @Builder
 @Getter
@@ -25,7 +25,7 @@ public class AnimalMidia extends AuditableEntity {
     @Column(nullable = false)
     private String url;
 
-    @Column(nullable = false)
+    @Column(name = "chave_s3", nullable = false)
     private String chaveS3;
 
     @Column(nullable = false)
