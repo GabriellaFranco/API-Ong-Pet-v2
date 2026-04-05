@@ -2,9 +2,9 @@ package com.enterprise.ong_pet2.mapper;
 
 import com.enterprise.ong_pet2.entity.ItemEstoque;
 import com.enterprise.ong_pet2.entity.MovimentacaoEstoque;
-import com.enterprise.ong_pet2.dto.estoque.ItemEstoqueRequestDTO;
-import com.enterprise.ong_pet2.dto.estoque.ItemEstoqueResponseDTO;
-import com.enterprise.ong_pet2.dto.estoque.MovimentacaoResponseDTO;
+import com.enterprise.ong_pet2.model.dto.estoque.ItemEstoqueRequestDTO;
+import com.enterprise.ong_pet2.model.dto.estoque.ItemEstoqueResponseDTO;
+import com.enterprise.ong_pet2.model.dto.estoque.MovimentacaoResponseDTO;
 import org.springframework.stereotype.Component;
 
 @Component

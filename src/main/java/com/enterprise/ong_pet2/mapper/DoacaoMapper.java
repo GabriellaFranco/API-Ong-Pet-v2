@@ -3,8 +3,8 @@ package com.enterprise.ong_pet2.mapper;
 import com.enterprise.ong_pet2.entity.Animal;
 import com.enterprise.ong_pet2.entity.Doacao;
 import com.enterprise.ong_pet2.entity.Usuario;
-import com.enterprise.ong_pet2.dto.doacao.DoacaoRequestDTO;
-import com.enterprise.ong_pet2.dto.doacao.DoacaoResponseDTO;
+import com.enterprise.ong_pet2.model.dto.doacao.DoacaoRequestDTO;
+import com.enterprise.ong_pet2.model.dto.doacao.DoacaoResponseDTO;
 import org.springframework.stereotype.Component;
 
 @Component
