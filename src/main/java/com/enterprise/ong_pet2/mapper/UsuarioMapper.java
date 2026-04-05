@@ -1,9 +1,9 @@
 package com.enterprise.ong_pet2.mapper;
 
 import com.enterprise.ong_pet2.entity.Usuario;
-import com.enterprise.ong_pet2.dto.usuario.UsuarioRequestDTO;
-import com.enterprise.ong_pet2.dto.usuario.UsuarioResponseDTO;
-import com.enterprise.ong_pet2.dto.usuario.UsuarioUpdateDTO;
+import com.enterprise.ong_pet2.model.dto.usuario.UsuarioRequestDTO;
+import com.enterprise.ong_pet2.model.dto.usuario.UsuarioResponseDTO;
+import com.enterprise.ong_pet2.model.dto.usuario.UsuarioUpdateDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

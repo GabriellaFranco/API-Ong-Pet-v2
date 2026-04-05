@@ -2,8 +2,8 @@ package com.enterprise.ong_pet2.mapper;
 
 import com.enterprise.ong_pet2.entity.PerfilAdotante;
 import com.enterprise.ong_pet2.entity.Usuario;
-import com.enterprise.ong_pet2.dto.perfil_adotante.PerfilAdotanteRequestDTO;
-import com.enterprise.ong_pet2.dto.perfil_adotante.PerfilAdotanteResponseDTO;
+import com.enterprise.ong_pet2.model.dto.perfil_adotante.PerfilAdotanteRequestDTO;
+import com.enterprise.ong_pet2.model.dto.perfil_adotante.PerfilAdotanteResponseDTO;
 import org.springframework.stereotype.Component;
 
 @Component

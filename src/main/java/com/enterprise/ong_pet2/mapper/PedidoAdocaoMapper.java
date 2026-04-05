@@ -3,9 +3,9 @@ package com.enterprise.ong_pet2.mapper;
 import com.enterprise.ong_pet2.entity.Animal;
 import com.enterprise.ong_pet2.entity.PedidoAdocao;
 import com.enterprise.ong_pet2.entity.Usuario;
-import com.enterprise.ong_pet2.dto.pedido_adocao.PedidoAdocaoRequestDTO;
-import com.enterprise.ong_pet2.dto.pedido_adocao.PedidoAdocaoResponseDTO;
-import com.enterprise.ong_pet2.dto.pedido_adocao.PedidoAdocaoUpdateDTO;
+import com.enterprise.ong_pet2.model.dto.pedido_adocao.PedidoAdocaoRequestDTO;
+import com.enterprise.ong_pet2.model.dto.pedido_adocao.PedidoAdocaoResponseDTO;
+import com.enterprise.ong_pet2.model.dto.pedido_adocao.PedidoAdocaoUpdateDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
