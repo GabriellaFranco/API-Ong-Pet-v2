@@ -8,9 +8,11 @@ import com.enterprise.ong_pet2.enums.PorteAnimal;
 import com.enterprise.ong_pet2.exception.BusinessException;
 import com.enterprise.ong_pet2.exception.ResourceNotFoundException;
 import com.enterprise.ong_pet2.mapper.AnimalMapper;
+import com.enterprise.ong_pet2.messaging.publisher.EventPublisher;
 import com.enterprise.ong_pet2.model.dto.animal.AnimalRequestDTO;
 import com.enterprise.ong_pet2.model.dto.animal.AnimalResponseDTO;
 import com.enterprise.ong_pet2.model.dto.animal.AnimalUpdateDTO;
+import com.enterprise.ong_pet2.model.event.AnimalCadastradoEvent;
 import com.enterprise.ong_pet2.repository.AnimalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +21,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class AnimalService {
@@ -26,6 +30,7 @@ public class AnimalService {
     private final AnimalRepository animalRepository;
     private final AnimalMapper animalMapper;
     private final UsuarioService usuarioService;
+    private final EventPublisher eventPublisher;
 
     public Page<AnimalResponseDTO> getAllAnimais(Pageable pageable) {
         return animalRepository.findAll(pageable)
@@ -50,7 +55,22 @@ public class AnimalService {
         var usuarioLogado = usuarioService.getUsuarioLogado();
         validarRegistroUnico(dto, usuarioLogado);
         var animal = animalMapper.toAnimal(dto, usuarioLogado);
-        return animalMapper.toResponseDTO(animalRepository.save(animal));
+
+        var salvo = animalRepository.save(animal);
+
+        eventPublisher.publish(
+                new AnimalCadastradoEvent(
+                        salvo.getId(),
+                        usuarioLogado.getId(),
+                        salvo.getNome(),
+                        salvo.getEspecie(),
+                        salvo.getPorte(),
+                        LocalDateTime.now()
+                ),
+                "animal.cadastrado"
+        );
+
+        return animalMapper.toResponseDTO(salvo);
     }
 
     @Transactional
