@@ -7,9 +7,12 @@ import com.enterprise.ong_pet2.enums.StatusAdocao;
 import com.enterprise.ong_pet2.exception.BusinessException;
 import com.enterprise.ong_pet2.exception.ResourceNotFoundException;
 import com.enterprise.ong_pet2.mapper.PedidoAdocaoMapper;
+import com.enterprise.ong_pet2.messaging.publisher.EventPublisher;
 import com.enterprise.ong_pet2.model.dto.pedido_adocao.PedidoAdocaoRequestDTO;
 import com.enterprise.ong_pet2.model.dto.pedido_adocao.PedidoAdocaoResponseDTO;
 import com.enterprise.ong_pet2.model.dto.pedido_adocao.PedidoAdocaoUpdateDTO;
+import com.enterprise.ong_pet2.model.event.AdocaoCriadaEvent;
+import com.enterprise.ong_pet2.model.event.AdocaoStatusChangedEvent;
 import com.enterprise.ong_pet2.repository.AnimalRepository;
 import com.enterprise.ong_pet2.repository.PedidoAdocaoRepository;
 import com.enterprise.ong_pet2.repository.UsuarioRepository;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 
 @Service
@@ -32,6 +36,7 @@ public class PedidoAdocaoService {
     private final UsuarioRepository usuarioRepository;
     private final PedidoAdocaoMapper pedidoAdocaoMapper;
     private final UsuarioService usuarioService;
+    private final EventPublisher eventPublisher;
 
     @PreAuthorize("hasAnyRole('ADMIN', 'VOLUNTARIO')")
     public Page<PedidoAdocaoResponseDTO> getAllPedidos(Pageable pageable) {
@@ -71,7 +76,21 @@ public class PedidoAdocaoService {
         pedido.setDataPedido(LocalDate.now());
         pedido.setStatus(StatusAdocao.SOLICITADA);
 
-        return pedidoAdocaoMapper.toResponseDTO(pedidoAdocaoRepository.save(pedido));
+        var salvo = pedidoAdocaoRepository.save(pedido);
+
+        eventPublisher.publish(
+                new AdocaoCriadaEvent(
+                        salvo.getId(),
+                        adotante.getId(),
+                        animal.getId(),
+                        voluntario.getId(),
+                        salvo.getScoreMatching(),
+                        LocalDateTime.now()
+                ),
+                "adocao.criada"
+        );
+
+        return pedidoAdocaoMapper.toResponseDTO(salvo);
     }
 
     @Transactional
@@ -79,8 +98,27 @@ public class PedidoAdocaoService {
     public PedidoAdocaoResponseDTO updateStatusPedido(Long id, PedidoAdocaoUpdateDTO dto) {
         var pedido = pedidoAdocaoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido de adoção não encontrado: " + id));
+
+        // Captura o status anterior ANTES de atualizar
+        var statusAnterior = pedido.getStatus();
+
         pedidoAdocaoMapper.updateFromDTO(dto, pedido);
-        return pedidoAdocaoMapper.toResponseDTO(pedidoAdocaoRepository.save(pedido));
+        var salvo = pedidoAdocaoRepository.save(pedido);
+
+        eventPublisher.publish(
+                new AdocaoStatusChangedEvent(
+                        salvo.getId(),
+                        salvo.getAdotante().getId(),
+                        salvo.getAnimal().getId(),
+                        salvo.getVoluntarioResponsavel().getId(),
+                        statusAnterior,
+                        salvo.getStatus(),
+                        LocalDateTime.now()
+                ),
+                "adocao.status." + salvo.getStatus().name().toLowerCase()
+        );
+
+        return pedidoAdocaoMapper.toResponseDTO(salvo);
     }
 
     @Transactional
