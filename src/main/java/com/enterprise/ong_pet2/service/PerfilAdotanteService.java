@@ -47,31 +47,32 @@ public class PerfilAdotanteService {
     private int calcularScoreRisco(PerfilAdotante perfil) {
         int score = 0;
 
-        // Tipo de moradia (20 pts)
-        if (perfil.getTipoMoradia() == TipoMoradia.CASA_COM_QUINTAL) score += 20;
-        else if (perfil.getTipoMoradia() == TipoMoradia.CASA_SEM_QUINTAL) score += 12;
-        else score += 6;
+        // Tipo de moradia (25 pts)
+        if (perfil.getTipoMoradia() == TipoMoradia.CASA_COM_QUINTAL) score += 25;
+        else if (perfil.getTipoMoradia() == TipoMoradia.CASA_SEM_QUINTAL) score += 15;
+        else score += 8; // APARTAMENTO
 
-        // Horas em casa por dia (15 pts)
-        if (perfil.getHorasEmCasaPorDia() >= 8) score += 15;
-        else if (perfil.getHorasEmCasaPorDia() >= 4) score += 8;
+        // Horas em casa por dia (20 pts)
+        if (perfil.getHorasEmCasaPorDia() >= 8) score += 20;
+        else if (perfil.getHorasEmCasaPorDia() >= 4) score += 12;
         else score += 0;
 
-        // Experiência com animais (10 pts)
-        if (Boolean.TRUE.equals(perfil.getExperienciaAnimais())) score += 10;
-        else score += 5;
+        // Experiência com animais (20 pts)
+        if (Boolean.TRUE.equals(perfil.getExperienciaAnimais())) score += 20;
+        else score += 8;
 
-        // Sem outros pets (5 pts)
-        if (Boolean.FALSE.equals(perfil.getTemOutrosPets())) score += 5;
-        else score += 3;
+        // Outros pets (15 pts)
+        if (Boolean.FALSE.equals(perfil.getTemOutrosPets())) score += 15;
+        else score += 6;
 
-        // Faixa de renda (5 pts)
-        if (perfil.getRendaMensalFaixa() == FaixaRenda.ACIMA_5SM) score += 5;
-        else if (perfil.getRendaMensalFaixa() == FaixaRenda.DE_2_A_5SM) score += 3;
-        else score += 1;
+        // Faixa de renda (10 pts)
+        if (perfil.getRendaMensalFaixa() == FaixaRenda.ACIMA_5SM) score += 10;
+        else if (perfil.getRendaMensalFaixa() == FaixaRenda.DE_2_A_5SM) score += 6;
+        else score += 2;
 
-        // Área da residência (5 pts)
-        if (perfil.getAreaM2() != null && perfil.getAreaM2() >= 60) score += 5;
+        // Área da residência (10 pts)
+        if (perfil.getAreaM2() != null && perfil.getAreaM2() >= 60) score += 10;
+        else if (perfil.getAreaM2() != null && perfil.getAreaM2() >= 30) score += 5;
         else score += 2;
 
         return Math.min(score, 100);

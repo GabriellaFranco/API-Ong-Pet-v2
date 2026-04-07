@@ -5,8 +5,10 @@ import com.enterprise.ong_pet2.enums.TipoDoacao;
 import com.enterprise.ong_pet2.exception.BusinessException;
 import com.enterprise.ong_pet2.exception.ResourceNotFoundException;
 import com.enterprise.ong_pet2.mapper.DoacaoMapper;
+import com.enterprise.ong_pet2.messaging.publisher.EventPublisher;
 import com.enterprise.ong_pet2.model.dto.doacao.DoacaoRequestDTO;
 import com.enterprise.ong_pet2.model.dto.doacao.DoacaoResponseDTO;
+import com.enterprise.ong_pet2.model.event.DoacaoCriadaEvent;
 import com.enterprise.ong_pet2.repository.AnimalRepository;
 import com.enterprise.ong_pet2.repository.DoacaoRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class DoacaoService {
     private final AnimalRepository animalRepository;
     private final DoacaoMapper doacaoMapper;
     private final UsuarioService usuarioService;
+    private final EventPublisher eventPublisher;
 
     private static final BigDecimal VALOR_MINIMO = new BigDecimal("1.00");
 
@@ -69,7 +72,20 @@ public class DoacaoService {
         var doacao = doacaoMapper.toDoacao(dto, doador, animal);
         doacao.setData(LocalDateTime.now());
 
-        return doacaoMapper.toResponseDTO(doacaoRepository.save(doacao));
+        var salva = doacaoRepository.save(doacao);
+
+        eventPublisher.publish(
+                new DoacaoCriadaEvent(
+                        salva.getId(),
+                        doador.getId(),
+                        salva.getValor(),
+                        salva.getCategoria(),
+                        salva.getData()
+                ),
+                "doacao.criada"
+        );
+
+        return doacaoMapper.toResponseDTO(salva);
     }
 
     @Transactional

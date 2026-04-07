@@ -99,9 +99,11 @@ public class PedidoAdocaoService {
         var pedido = pedidoAdocaoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido de adoção não encontrado: " + id));
 
-        // Captura o status anterior ANTES de atualizar
-        var statusAnterior = pedido.getStatus();
+        if (dto.statusAdocao() != null) {
+            validarTransicaoStatus(pedido.getStatus(), dto.statusAdocao());
+        }
 
+        var statusAnterior = pedido.getStatus();
         pedidoAdocaoMapper.updateFromDTO(dto, pedido);
         var salvo = pedidoAdocaoRepository.save(pedido);
 
@@ -119,6 +121,23 @@ public class PedidoAdocaoService {
         );
 
         return pedidoAdocaoMapper.toResponseDTO(salvo);
+    }
+
+    private void validarTransicaoStatus(StatusAdocao atual, StatusAdocao novo) {
+        boolean transicaoValida = switch (atual) {
+            case SOLICITADA -> novo == StatusAdocao.EM_ANALISE
+                    || novo == StatusAdocao.REPROVADA;
+            case EM_ANALISE -> novo == StatusAdocao.APROVADA
+                    || novo == StatusAdocao.REPROVADA;
+            case APROVADA -> novo == StatusAdocao.CONCLUIDA;
+            default -> false;
+        };
+
+        if (!transicaoValida) {
+            throw new BusinessException(
+                    "Transição de status inválida: " + atual + " → " + novo
+            );
+        }
     }
 
     @Transactional
