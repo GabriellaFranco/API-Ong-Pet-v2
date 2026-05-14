@@ -2,6 +2,7 @@ package com.enterprise.ong_pet2.service;
 
 import com.enterprise.ong_pet2.entity.Despesa;
 import com.enterprise.ong_pet2.entity.Doacao;
+import com.enterprise.ong_pet2.enums.CategoriaEstoque;
 import com.enterprise.ong_pet2.enums.TipoDoacao;
 import com.enterprise.ong_pet2.model.dto.financeiro.ResumoFinanceiroDTO;
 import com.enterprise.ong_pet2.repository.DespesaRepository;
@@ -137,23 +138,26 @@ public class FinanceiroService {
 
     private List<Doacao> buscarDoacoes(String doador, TipoDoacao categoria,
                                        LocalDate dataInicio, LocalDate dataFim) {
-        LocalDateTime inicio = dataInicio != null
-                ? dataInicio.atStartOfDay() : null;
-        LocalDateTime fim = dataFim != null
-                ? dataFim.atTime(LocalTime.MAX) : null;
+        LocalDateTime inicio = dataInicio != null ? dataInicio.atStartOfDay() : null;
+        LocalDateTime fim = dataFim != null ? dataFim.atTime(LocalTime.MAX) : null;
 
-        return doacaoRepository
-                .findByFilter(doador, categoria, inicio, fim,
-                        org.springframework.data.domain.Pageable.unpaged())
-                .getContent();
+        return doacaoRepository.findAll().stream()
+                .filter(d -> doador == null || d.getDoador().getNome()
+                        .toLowerCase().contains(doador.toLowerCase()))
+                .filter(d -> categoria == null || d.getCategoria() == categoria)
+                .filter(d -> inicio == null || !d.getData().isBefore(inicio))
+                .filter(d -> fim == null || !d.getData().isAfter(fim))
+                .toList();
     }
 
-    private List<Despesa> buscarDespesas(
-            com.enterprise.ong_pet2.enums.CategoriaEstoque categoria,
-            LocalDate dataInicio, LocalDate dataFim, Long idAnimal) {
-        return despesaRepository
-                .findByFilter(categoria, dataInicio, dataFim, idAnimal,
-                        org.springframework.data.domain.Pageable.unpaged())
-                .getContent();
+    private List<Despesa> buscarDespesas(CategoriaEstoque categoria,
+                                         LocalDate dataInicio, LocalDate dataFim,
+                                         Long idAnimal) {
+        return despesaRepository.findAll().stream()
+                .filter(d -> categoria == null || d.getCategoria() == categoria)
+                .filter(d -> dataInicio == null || !d.getData().isBefore(dataInicio))
+                .filter(d -> dataFim == null || !d.getData().isAfter(dataFim))
+                .filter(d -> idAnimal == null || (d.getAnimal() != null && d.getAnimal().getId().equals(idAnimal)))
+                .toList();
     }
 }

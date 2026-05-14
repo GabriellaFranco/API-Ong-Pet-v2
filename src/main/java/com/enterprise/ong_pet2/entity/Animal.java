@@ -6,7 +6,9 @@ import com.enterprise.ong_pet2.enums.PorteAnimal;
 import jakarta.persistence.*;
 import lombok.*;
 import jakarta.persistence.Id;
+import org.hibernate.annotations.JdbcTypeCode;
 
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 

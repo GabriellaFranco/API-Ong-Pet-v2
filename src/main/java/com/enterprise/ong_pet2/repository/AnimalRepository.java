@@ -19,7 +19,7 @@ public interface AnimalRepository extends JpaRepository<Animal, Long> {
 
     @Query("""
             SELECT a FROM Animal a
-            WHERE (:nome IS NULL OR LOWER(a.nome) LIKE LOWER(CONCAT('%', :nome, '%')))
+            WHERE (:nome IS NULL OR a.nome ILIKE CONCAT('%', :nome, '%'))
             AND (:especie IS NULL OR a.especie = :especie)
             AND (:genero IS NULL OR a.genero = :genero)
             AND (:porte IS NULL OR a.porte = :porte)
