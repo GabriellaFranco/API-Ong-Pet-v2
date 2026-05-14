@@ -26,8 +26,8 @@ public interface PedidoAdocaoRepository extends JpaRepository<PedidoAdocao, Long
             SELECT p FROM PedidoAdocao p
             WHERE (:status IS NULL OR p.status = :status)
             AND (:dataPedido IS NULL OR p.dataPedido = :dataPedido)
-            AND (:adotante IS NULL OR LOWER(p.adotante.nome) LIKE LOWER(CONCAT('%', :adotante, '%')))
-            AND (:voluntario IS NULL OR LOWER(p.voluntarioResponsavel.nome) LIKE LOWER(CONCAT('%', :voluntario, '%')))
+            AND (:adotante IS NULL OR p.adotante.nome ILIKE CONCAT('%', :adotante, '%'))
+            AND (:voluntario IS NULL OR p.voluntarioResponsavel.nome ILIKE CONCAT('%', :voluntario, '%'))
             """)
     Page<PedidoAdocao> findByFilter(
             @Param("status") StatusAdocao status,

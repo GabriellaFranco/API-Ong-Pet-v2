@@ -39,11 +39,15 @@ public class DoacaoService {
                 .map(doacaoMapper::toResponseDTO);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public Page<DoacaoResponseDTO> getDoacoesByFilter(String doador, TipoDoacao categoria,
                                                       LocalDateTime dataInicio, LocalDateTime dataFim,
                                                       Pageable pageable) {
-        return doacaoRepository.findByFilter(doador, categoria, dataInicio, dataFim, pageable)
+        return doacaoRepository.findByFilter(
+                        doador,
+                        categoria != null ? categoria.name() : null, // ← aqui
+                        dataInicio,
+                        dataFim,
+                        pageable)
                 .map(doacaoMapper::toResponseDTO);
     }
 

@@ -40,8 +40,27 @@ public class EstoqueService {
                                                          Boolean ativo,
                                                          Boolean alertaEstoqueBaixo,
                                                          Pageable pageable) {
-        return itemEstoqueRepository.findByFilter(categoria, ativo, alertaEstoqueBaixo, pageable)
-                .map(estoqueMapper::toItemResponseDTO);
+        var todos = itemEstoqueRepository.findAll().stream()
+                .filter(i -> categoria == null || i.getCategoria() == categoria)
+                .filter(i -> ativo == null || i.getAtivo().equals(ativo))
+                .filter(i -> alertaEstoqueBaixo == null || !alertaEstoqueBaixo
+                        || i.getQuantidadeAtual().compareTo(i.getQuantidadeMinima()) <= 0)
+                .toList();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), todos.size());
+        if (start > todos.size()) {
+            return new org.springframework.data.domain.PageImpl<>(
+                    java.util.List.of(), pageable, todos.size());
+        }
+
+        return new org.springframework.data.domain.PageImpl<>(
+                todos.subList(start, end).stream()
+                        .map(estoqueMapper::toItemResponseDTO)
+                        .toList(),
+                pageable,
+                todos.size()
+        );
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'VOLUNTARIO')")
@@ -106,13 +125,14 @@ public class EstoqueService {
             movimentacao.setDoacao(doacao);
         }
 
-        var salvo = movimentacaoEstoqueRepository.save(movimentacao);
+        movimentacaoEstoqueRepository.save(movimentacao);
+        movimentacaoEstoqueRepository.flush();
 
         var novoSaldo = movimentacaoEstoqueRepository.calcularSaldoAtual(item);
         item.setQuantidadeAtual(novoSaldo);
         itemEstoqueRepository.save(item);
 
-        return estoqueMapper.toMovimentacaoResponseDTO(salvo);
+        return estoqueMapper.toMovimentacaoResponseDTO(movimentacao);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'VOLUNTARIO')")

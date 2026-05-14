@@ -17,16 +17,27 @@ public interface DoacaoRepository extends JpaRepository<Doacao, Long> {
 
     boolean existsByDoadorAndDataBetween(Usuario doador, LocalDateTime inicio, LocalDateTime fim);
 
-    @Query("""
-            SELECT d FROM Doacao d
-            WHERE (:doador IS NULL OR LOWER(d.doador.nome) LIKE LOWER(CONCAT('%', :doador, '%')))
-            AND (:categoria IS NULL OR d.categoria = :categoria)
-            AND (:dataInicio IS NULL OR d.data >= :dataInicio)
-            AND (:dataFim IS NULL OR d.data <= :dataFim)
-            """)
+    @Query(value = """
+        SELECT d.* FROM doacoes d
+        JOIN usuarios u ON u.id = d.id_doador
+        WHERE (CAST(:doador AS varchar) IS NULL OR LOWER(u.nome::varchar) ILIKE LOWER(CONCAT('%', CAST(:doador AS varchar), '%')))
+        AND (CAST(:categoria AS varchar) IS NULL OR d.categoria = CAST(:categoria AS varchar))
+        AND (CAST(:dataInicio AS timestamp) IS NULL OR d.data >= CAST(:dataInicio AS timestamp))
+        AND (CAST(:dataFim AS timestamp) IS NULL OR d.data <= CAST(:dataFim AS timestamp))
+        ORDER BY d.id DESC
+        """,
+            countQuery = """
+        SELECT COUNT(*) FROM doacoes d
+        JOIN usuarios u ON u.id = d.id_doador
+        WHERE (CAST(:doador AS varchar) IS NULL OR LOWER(u.nome::varchar) ILIKE LOWER(CONCAT('%', CAST(:doador AS varchar), '%')))
+        AND (CAST(:categoria AS varchar) IS NULL OR d.categoria = CAST(:categoria AS varchar))
+        AND (CAST(:dataInicio AS timestamp) IS NULL OR d.data >= CAST(:dataInicio AS timestamp))
+        AND (CAST(:dataFim AS timestamp) IS NULL OR d.data <= CAST(:dataFim AS timestamp))
+        """,
+            nativeQuery = true)
     Page<Doacao> findByFilter(
             @Param("doador") String doador,
-            @Param("categoria") TipoDoacao categoria,
+            @Param("categoria") String categoria,
             @Param("dataInicio") LocalDateTime dataInicio,
             @Param("dataFim") LocalDateTime dataFim,
             Pageable pageable

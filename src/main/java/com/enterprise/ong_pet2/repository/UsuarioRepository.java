@@ -25,9 +25,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Query("""
             SELECT u FROM Usuario u
-            WHERE (:nome IS NULL OR LOWER(u.nome) LIKE LOWER(CONCAT('%', :nome, '%')))
+            WHERE (:nome IS NULL OR u.nome ILIKE CONCAT('%', :nome, '%'))
             AND (:cpf IS NULL OR u.cpf LIKE CONCAT('%', :cpf, '%'))
-            AND (:cidade IS NULL OR LOWER(u.cidade) LIKE LOWER(CONCAT('%', :cidade, '%')))
+            AND (:cidade IS NULL OR u.cidade ILIKE CONCAT('%', :cidade, '%'))
             AND (:perfil IS NULL OR u.perfil = :perfil)
             """)
     Page<Usuario> findByFilter(
